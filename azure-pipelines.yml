@@ -23,10 +23,13 @@ stages:
 #          linux:
 #            imageName: 'ubuntu-16.04'
 #            CXX: g++
+#          linux_superbuild:
+#            imageName: 'ubuntu-16.04'
+#            CXX: g++
+#            SUPERBUILD: 'ON'
 #          macOS:
-#            imageName: 'macOS-10.14'
+#            imageName: 'macOS-10.15'
 #            CXX: clang++
-#
 #      pool:
 #        vmImage: $(imageName)
 #      steps:
@@ -35,16 +38,6 @@ stages:
     - job: Build_windows
       strategy:
         matrix:
-          linux:
-            imageName: 'ubuntu-20.04'
-            CXX: g++
-          linux_superbuild:
-            imageName: 'ubuntu-20.04'
-            CXX: g++
-            SUPERBUILD: 'ON'
-          macOS:
-            imageName: 'macOS-10.15'
-            CXX: clang++
           VS2019:
             imageName: 'windows-2019'
       pool:
