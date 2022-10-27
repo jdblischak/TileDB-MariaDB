@@ -1,0 +1,21 @@
+name: push
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    name: TileDB-MariaDB
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup
+        run: |
+          export CXXFLAGS="${CXXFLAGS} -Wno-error=deprecated-declarations"
+          export CFLAGS="${CFLAGS} -Wno-error=deprecated-declarations"
+          sudo apt update
+          sudo apt install -y libncurses5-dev bison gdb
+          export LD_LIBRARY_PATH=$BUILD_REPOSITORY_LOCALPATH/build_deps/TileDB/dist/lib:/usr/local/lib:$LD_LIBRARY_PATH
+          echo $BUILD_REPOSITORY_LOCALPATH
+          echo $LD_LIBRARY_PATH
+      - name: Install and test
+        run: source ./scripts/ci_install_tiledb_and_run_tests.sh
