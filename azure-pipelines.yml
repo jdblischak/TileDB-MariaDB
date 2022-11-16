@@ -2,6 +2,7 @@ trigger:
   branches:
     include:
     - master
+    - no-docker
   tags:
     include:
     - "*"
@@ -30,32 +31,3 @@ stages:
       steps:
       - template: scripts/azure-linux_mac.yml
 
-
-  - stage: Docker
-    condition: or(startsWith(variables['Build.SourceBranch'], 'refs/tags'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-    jobs:
-    - job: Docker
-      pool:
-        vmImage: 'ubuntu-18.04'
-
-      strategy:
-        matrix:
-          tiledb-mariadb:
-            dockerfile: docker/Dockerfile
-            repository: tiledb/tiledb-mariadb
-            context: .
-          tiledb-mariadb-min:
-            dockerfile: docker/Dockerfile-min
-            repository: tiledb/tiledb-mariadb-min
-            context: .              
-          tiledb-mariadb-server:
-            dockerfile: docker/Dockerfile-server
-            repository: tiledb/tiledb-mariadb-server
-            context: .
-          tiledb-mariadb-r:
-            dockerfile: docker/Dockerfile-R
-            repository: tiledb/tiledb-mariadb-r
-            context: .
-            
-      steps:
-      - template: scripts/build-images.yml
