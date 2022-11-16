@@ -5,8 +5,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
-    name: TileDB-MariaDB (SUPERBUILD=${{ matrix.superbuild }})
+    name: SUPERBUILD=${{ matrix.superbuild }}
     strategy:
+      fail-fast: false
       matrix:
         superbuild: ["ON", "OFF"]
     env:
