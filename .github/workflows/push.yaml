@@ -5,7 +5,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
-    name: TileDB-MariaDB
+    name: TileDB-MariaDB (SUPERBUILD=${{ matrix.superbuild }})
+    strategy:
+      matrix:
+        superbuild: ["ON", "OFF"]
+    env:
+      SUPERBUILD: ${{ matrix.superbuild }}
     steps:
       - uses: actions/checkout@v3
       - name: Setup
