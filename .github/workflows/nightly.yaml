@@ -22,11 +22,12 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: MariaDB/server
-          ref: mariadb-10.5.13      
+          ref: mariadb-10.5.13
+          path: mariadb
       - name: Clone TileDB-Inc/TileDB-MariaDB
         uses: actions/checkout@v3
         with:
-          path: storage/mytile
+          path: mariadb/storage/mytile
       - name: Directory structure
         run: |
           echo "HOME: $HOME"
@@ -49,6 +50,7 @@ jobs:
           sudo make -C tiledb install
       - name: Build TileDB-MariaDB
         run: |
+          cd mariadb
           mkdir builddir
           cd builddir
           cmake -DPLUGIN_OQGRAPH=NO -DWITH_MARIABACKUP=OFF \
@@ -58,6 +60,6 @@ jobs:
                 -DPLUGIN_FEDERATEDX=NO -DPLUGIN_CONNECT=NO \
                 -DCMAKE_BUILD_TYPE=Debug -SWITH_DEBUG=1 \
                 -DTILEDB_FORCE_ALL_DEPS=${TILEDB_FORCE_ALL_DEPS} \
-                -DCMAKE_PREFIX_PATH=~/libtiledb/dist \
+                -DCMAKE_PREFIX_PATH=../../libtiledb/dist \
                 ..
           make -j2
