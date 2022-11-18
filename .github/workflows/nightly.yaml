@@ -67,3 +67,4 @@ jobs:
                 -DTILEDB_FORCE_ALL_DEPS=${TILEDB_FORCE_ALL_DEPS} \
                 ..
           make -j2
+          ./mysql-test/mysql-test-run.pl --suite=mytile --debug
