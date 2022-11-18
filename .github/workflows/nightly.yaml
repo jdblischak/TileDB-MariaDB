@@ -50,6 +50,9 @@ jobs:
           sudo make -C tiledb install
       - name: Build TileDB-MariaDB
         run: |
+          export SUPERBUILD_FLAGS_NEEDED="-Wno-error=deprecated-declarations"
+          export CXXFLAGS="${CXXFLAGS} ${SUPERBUILD_FLAGS_NEEDED}"
+          export CFLAGS="${CFLAGS} ${SUPERBUILD_FLAGS_NEEDED}"
           export LD_LIBRARY_PATH=$GITHUB_WORKSPACE/libtiledb/build_deps/TileDB/dist/lib:/usr/local/lib:$LD_LIBRARY_PATH
           echo $LD_LIBRARY_PATH
           cd mariadb
