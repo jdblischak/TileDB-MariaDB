@@ -56,7 +56,7 @@ jobs:
                 -DPLUGIN_MROONGA=NO -DPLUGIN_SPIDER=NO \
                 -DPLUGIN_SPHINX=NO -DPLUGIN_FEDERATED=NO \
                 -DPLUGIN_FEDERATEDX=NO -DPLUGIN_CONNECT=NO \
-                -DCMAKE_BUILD_TYPE=Debug -SWITH_DEBUG=1 \
+                -DCMAKE_BUILD_TYPE=Debug -DWITH_DEBUG=1 \
                 -DTILEDB_FORCE_ALL_DEPS=${TILEDB_FORCE_ALL_DEPS} \
                 ..
           make -j2
