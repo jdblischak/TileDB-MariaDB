@@ -1,6 +1,8 @@
 name: push
 on:
   push:
+    paths:
+      - '.github/workflows/push.yaml'
   workflow_dispatch:
 jobs:
   build:

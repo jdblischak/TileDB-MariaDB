@@ -1,0 +1,63 @@
+name: nightly
+on:
+  push:
+    paths:
+      - '.github/workflows/nightly.yaml'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    name: nightly
+    env:
+      SUPERBUILD: ON
+      TILEDB_FORCE_ALL_DEPS: OFF
+    steps:
+      - name: Clone libtiledb
+        uses: actions/checkout@v3
+        with:
+          repository: TileDB-Inc/TileDB
+          ref: dev
+          path: libtiledb
+      - name: Clone MariaDB
+        uses: actions/checkout@v3
+        with:
+          repository: MariaDB/server
+          ref: mariadb-10.5.13      
+      - name: Clone TileDB-Inc/TileDB-MariaDB
+        uses: actions/checkout@v3
+        with:
+          path: storage/mytile
+      - name: Directory structure
+        run: |
+          echo "HOME: $HOME"
+          pwd
+          ls
+          ls -l
+          ls -R
+      - name: Setup
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes \
+            libncurses5-dev bison gdb
+      - name: Build libtiledb
+        run: |
+          cd libtiledb
+          mkdir -p build
+          cd build
+          cmake -DTILEDB_VERBOSE=ON -DTILEDB_S3=ON -DTILEDB_SERIALIZATION=ON -DCMAKE_BUILD_TYPE=Debug ..
+          make -j2
+          sudo make -C tiledb install
+      - name: Build TileDB-MariaDB
+        run: |
+          mkdir builddir
+          cd builddir
+          cmake -DPLUGIN_OQGRAPH=NO -DWITH_MARIABACKUP=OFF \
+                -DPLUGIN_TOKUDB=NO -DPLUGIN_ROCKSDB=NO \
+                -DPLUGIN_MROONGA=NO -DPLUGIN_SPIDER=NO \
+                -DPLUGIN_SPHINX=NO -DPLUGIN_FEDERATED=NO \
+                -DPLUGIN_FEDERATEDX=NO -DPLUGIN_CONNECT=NO \
+                -DCMAKE_BUILD_TYPE=Debug -SWITH_DEBUG=1 \
+                -DTILEDB_FORCE_ALL_DEPS=${TILEDB_FORCE_ALL_DEPS} \
+                -DCMAKE_PREFIX_PATH=~/libtiledb/dist \
+                ..
+          make -j2
