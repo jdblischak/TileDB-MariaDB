@@ -50,6 +50,8 @@ jobs:
           sudo make -C tiledb install
       - name: Build TileDB-MariaDB
         run: |
+          export LD_LIBRARY_PATH=$GITHUB_WORKSPACE/libtiledb/build_deps/TileDB/dist/lib:/usr/local/lib:$LD_LIBRARY_PATH
+          echo $LD_LIBRARY_PATH
           cd mariadb
           mkdir builddir
           cd builddir
@@ -60,6 +62,5 @@ jobs:
                 -DPLUGIN_FEDERATEDX=NO -DPLUGIN_CONNECT=NO \
                 -DCMAKE_BUILD_TYPE=Debug -SWITH_DEBUG=1 \
                 -DTILEDB_FORCE_ALL_DEPS=${TILEDB_FORCE_ALL_DEPS} \
-                -DCMAKE_PREFIX_PATH=../../libtiledb/dist \
                 ..
           make -j2
