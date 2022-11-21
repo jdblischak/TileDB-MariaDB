@@ -1,0 +1,62 @@
+name: nightly-macos
+on:
+  push:
+    paths:
+      - '.github/workflows/nightly-macos.yaml'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: macos-12
+    name: nightly-macos
+    env:
+      SUPERBUILD: ON
+      TILEDB_FORCE_ALL_DEPS: OFF
+    steps:
+      - name: Clone libtiledb
+        uses: actions/checkout@v3
+        with:
+          repository: TileDB-Inc/TileDB
+          ref: dev
+          path: libtiledb
+      - name: Clone MariaDB
+        uses: actions/checkout@v3
+        with:
+          repository: MariaDB/server
+          ref: mariadb-10.5.13
+          path: mariadb
+      - name: Clone TileDB-Inc/TileDB-MariaDB
+        uses: actions/checkout@v3
+        with:
+          path: mariadb/storage/mytile
+      - name: Setup
+        run: |
+          brew install cmake jemalloc traildb/judy/judy openssl@1.1 boost gnutls m4 bison@2.7
+      - name: Build libtiledb
+        run: |
+          cd libtiledb
+          mkdir -p build
+          cd build
+          cmake -DTILEDB_VERBOSE=ON -DTILEDB_S3=ON -DTILEDB_SERIALIZATION=ON -DCMAKE_BUILD_TYPE=Debug ..
+          make -j2
+          sudo make -C tiledb install
+      - name: Build TileDB-MariaDB
+        run: |
+          export PATH="$(brew --prefix bison@2.7)/bin:$PATH"
+          export OSX_FLAGS_NEEDED="-Wno-error=enum-conversion -Wno-error=deprecated-declarations -Wno-error=incompatible-pointer-types-discards-qualifiers -Wno-error=incompatible-function-pointer-types -Wno-error=writable-strings -Wno-writable-strings -Wno-write-strings -Wno-error -Wno-error=pointer-sign -Wno-error=all -Wno-error=unknown-warning-option -Wno-error=unused-but-set-variable -Wno-error=deprecated-copy-with-user-provided-copy"
+          export CXXFLAGS="${CXXFLAGS} ${OSX_FLAGS_NEEDED}"
+          export CFLAGS="${CFLAGS} ${OSX_FLAGS_NEEDED}"
+          export DYLD_LIBRARY_PATH=$GITHUB_WORKSPACE/libtiledb/build_deps/TileDB/dist/lib:/usr/local/lib:$DYLD_LIBRARY_PATH
+          echo $DYLD_LIBRARY_PATH
+          cd mariadb
+          mkdir builddir
+          cd builddir
+          cmake -DPLUGIN_OQGRAPH=NO -DWITH_MARIABACKUP=OFF \
+                -DPLUGIN_TOKUDB=NO -DPLUGIN_ROCKSDB=NO \
+                -DPLUGIN_MROONGA=NO -DPLUGIN_SPIDER=NO \
+                -DPLUGIN_SPHINX=NO -DPLUGIN_FEDERATED=NO \
+                -DPLUGIN_FEDERATEDX=NO -DPLUGIN_CONNECT=NO \
+                -DCMAKE_BUILD_TYPE=Debug -DWITH_DEBUG=1 \
+                -DTILEDB_FORCE_ALL_DEPS=${TILEDB_FORCE_ALL_DEPS} \
+                ..
+          make -j2
+          ./mysql-test/mysql-test-run.pl --suite=mytile --debug
