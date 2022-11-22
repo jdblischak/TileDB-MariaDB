@@ -7,13 +7,13 @@ OS=$(uname)
 if [[ "$OS" == "Linux" ]]
 then
   FLAGS_NEEDED="-Wno-error=deprecated-declarations"
-  export LD_LIBRARY_PATH=$GITHUB_WORKSPACE/libtiledb/build_deps/TileDB/dist/lib:/usr/local/lib:${LD_LIBRARY_PATH-}
+  export LD_LIBRARY_PATH=$(pwd)/libtiledb/build_deps/TileDB/dist/lib:/usr/local/lib:${LD_LIBRARY_PATH-}
   echo $LD_LIBRARY_PATH
 elif [[ "$OS" == "Darwin" ]]
 then
   FLAGS_NEEDED="-Wno-error=enum-conversion -Wno-error=deprecated-declarations -Wno-error=incompatible-pointer-types-discards-qualifiers -Wno-error=incompatible-function-pointer-types -Wno-error=writable-strings -Wno-writable-strings -Wno-write-strings -Wno-error -Wno-error=pointer-sign -Wno-error=all -Wno-error=unknown-warning-option -Wno-error=unused-but-set-variable -Wno-error=deprecated-copy-with-user-provided-copy"
   export PATH="$(brew --prefix bison@2.7)/bin:$PATH"
-  export DYLD_LIBRARY_PATH=$GITHUB_WORKSPACE/libtiledb/build_deps/TileDB/dist/lib:/usr/local/lib:${DYLD_LIBRARY_PATH-}
+  export DYLD_LIBRARY_PATH=$(pwd)/libtiledb/build_deps/TileDB/dist/lib:/usr/local/lib:${DYLD_LIBRARY_PATH-}
   echo $DYLD_LIBRARY_PATH
 else
   echo "Unrecognized OS: $OS"
