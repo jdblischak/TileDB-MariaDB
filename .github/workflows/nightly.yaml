@@ -35,11 +35,11 @@ jobs:
           path: mariadb/storage/mytile
       - name: Setup Ubuntu
         if: runner.os == 'Linux'
-        run: sudo bash scripts/nightly/setup-ubuntu.sh
+        run: sudo bash mariadb/storage/mytile/scripts/nightly/setup-ubuntu.sh
       - name: Setup macOS
         if: runner.os == 'macOS'
-        run: bash scripts/nightly/setup-macos.sh
+        run: bash mariadb/storage/mytile/scripts/nightly/setup-macos.sh
       - name: Build libtiledb
-        run: bash scripts/nightly/build-libtiledb.sh
+        run: bash mariadb/storage/mytile/scripts/nightly/build-libtiledb.sh
       - name: Build TileDB-MariaDB
-        run: bash scripts/nightly/build-tiledb-mariadb.sh
+        run: bash mariadb/storage/mytile/scripts/nightly/build-tiledb-mariadb.sh
