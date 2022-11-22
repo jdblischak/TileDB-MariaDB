@@ -9,7 +9,6 @@ jobs:
     runs-on: macos-12
     name: nightly-macos
     env:
-      CXX: clang++
       SUPERBUILD: ON
       TILEDB_FORCE_ALL_DEPS: OFF
     steps:

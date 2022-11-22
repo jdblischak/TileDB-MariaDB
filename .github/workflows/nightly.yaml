@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-20.04
     name: nightly
     env:
-      CXX: g++
       SUPERBUILD: ON
       TILEDB_FORCE_ALL_DEPS: OFF
     steps:
