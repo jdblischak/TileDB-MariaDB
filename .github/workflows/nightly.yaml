@@ -3,13 +3,18 @@ on:
   push:
     paths:
       - '.github/workflows/nightly.yaml'
+  schedule:
+    - cron: "0 2 * * *" # Every night at 2 AM UTC (9 PM EST; 10 PM EDT)
   workflow_dispatch:
 jobs:
   build:
-    runs-on: ubuntu-20.04
-    name: nightly
+    runs-on: ${{ matrix.os }}
+    name: nightly-${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["macos-12", "ubuntu-20.04"]
     env:
-      SUPERBUILD: ON
       TILEDB_FORCE_ALL_DEPS: OFF
     steps:
       - name: Clone libtiledb
@@ -28,36 +33,13 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: mariadb/storage/mytile
-      - name: Setup
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes \
-            libncurses5-dev bison gdb
+      - name: Setup Ubuntu
+        if: runner.os == "Linux"
+        run: sudo bash scripts/nightly/setup-ubuntu.sh
+      - name: Setup macOS
+        if: runner.os == "macOS"
+        run: bash scripts/nightly/setup-macos.sh
       - name: Build libtiledb
-        run: |
-          cd libtiledb
-          mkdir -p build
-          cd build
-          cmake -DTILEDB_VERBOSE=ON -DTILEDB_S3=ON -DTILEDB_SERIALIZATION=ON -DCMAKE_BUILD_TYPE=Debug ..
-          make -j2
-          sudo make -C tiledb install
+        run: bash scripts/nightly/build-libtiledb.sh
       - name: Build TileDB-MariaDB
-        run: |
-          export SUPERBUILD_FLAGS_NEEDED="-Wno-error=deprecated-declarations"
-          export CXXFLAGS="${CXXFLAGS} ${SUPERBUILD_FLAGS_NEEDED}"
-          export CFLAGS="${CFLAGS} ${SUPERBUILD_FLAGS_NEEDED}"
-          export LD_LIBRARY_PATH=$GITHUB_WORKSPACE/libtiledb/build_deps/TileDB/dist/lib:/usr/local/lib:$LD_LIBRARY_PATH
-          echo $LD_LIBRARY_PATH
-          cd mariadb
-          mkdir builddir
-          cd builddir
-          cmake -DPLUGIN_OQGRAPH=NO -DWITH_MARIABACKUP=OFF \
-                -DPLUGIN_TOKUDB=NO -DPLUGIN_ROCKSDB=NO \
-                -DPLUGIN_MROONGA=NO -DPLUGIN_SPIDER=NO \
-                -DPLUGIN_SPHINX=NO -DPLUGIN_FEDERATED=NO \
-                -DPLUGIN_FEDERATEDX=NO -DPLUGIN_CONNECT=NO \
-                -DCMAKE_BUILD_TYPE=Debug -DWITH_DEBUG=1 \
-                -DTILEDB_FORCE_ALL_DEPS=${TILEDB_FORCE_ALL_DEPS} \
-                ..
-          make -j2
-          ./mysql-test/mysql-test-run.pl --suite=mytile --debug
+        run: bash scripts/nightly/build-tiledb-mariadb.sh
