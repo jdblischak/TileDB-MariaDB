@@ -4,7 +4,7 @@ set -eux
 # Install dependencies on macOS
 
 brew install \
-  bison@2.7
+  bison@2.7 \
   boost \
   cmake \
   gnutls \
