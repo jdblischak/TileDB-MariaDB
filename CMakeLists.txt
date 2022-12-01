@@ -55,11 +55,29 @@ if(NOT TileDB_FOUND AND SUPERBUILD)
     SET(TILEDB_VERSION_PATCH "2")
     SET(TILEDB_VERSION "${TILEDB_VERSION_MAJOR}.${TILEDB_VERSION_MINOR}.${TILEDB_VERSION_PATCH}")
 
+    set(USE_FIXED TRUE)
+    if ($ENV{TILEDB_USE_DEV})
+        set(USE_FIXED FALSE)
+        MESSAGE(STATUS "Building TileDB from dev branch")
+    endif()
+
+    if(USE_FIXED)
+        set(EP_SOURCE
+            URL "https://github.com/TileDB-Inc/TileDB/archive/${TILEDB_VERSION}.zip"
+            URL_HASH SHA1=f159b1677d9d0471c8f97fe4b0492cef156730f2
+            )
+    else()
+        set(
+            EP_SOURCE
+            GIT_REPOSITORY "https://github.com/TileDB-Inc/TileDB/"
+            GIT_TAG "dev"
+            )
+    endif()
+
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=non-virtual-dtor")
     ExternalProject_Add(tiledb
+            ${EP_SOURCE}
             PREFIX "externals"
-            URL "https://github.com/TileDB-Inc/TileDB/archive/${TILEDB_VERSION}.zip"
-	    URL_HASH SHA1=e5dbe0a308da3556b46fa010f98365cfd0ef56a6
             DOWNLOAD_NAME "tiledb.zip"
             CMAKE_ARGS
             -DCMAKE_INSTALL_PREFIX=${EP_INSTALL_PREFIX}
