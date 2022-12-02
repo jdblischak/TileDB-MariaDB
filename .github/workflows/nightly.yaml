@@ -37,5 +37,7 @@ jobs:
       - name: Check Git SHA of libtiledb
         if: always()
         run: |
-          ls -R mariadb/storage/mytile/externals/
-          git -C mariadb/storage/mytile/externals/src/ep_tiledb log -n 1
+          pwd
+          ls
+          ls -R
+          git -C mariadb/builddir/storage/mytile/externals/src/ep_tiledb log -n 1
