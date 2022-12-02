@@ -40,4 +40,4 @@ jobs:
           pwd
           ls
           ls -R
-          git -C mariadb/builddir/storage/mytile/externals/src/ep_tiledb log -n 1
+          git -C mariadb/builddir/storage/mytile/externals/src/tiledb log -n 1
