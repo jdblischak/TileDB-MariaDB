@@ -18,7 +18,6 @@ jobs:
     env:
       OWNER_TILEDB_MARIADB: ${{ github.repository_owner }} # support building from a fork
       REF_MARIADB: mariadb-10.5.13
-      REF_LIBTILEDB: dev
       REF_TILEDB_MARIADB: ${{ github.sha }}
       TILEDB_FORCE_ALL_DEPS: OFF
       TILEDB_USE_DEV: ON
@@ -33,7 +32,5 @@ jobs:
       - name: Setup macOS
         if: runner.os == 'macOS'
         run: bash scripts/nightly/setup-macos.sh
-      # - name: Build libtiledb
-      #   run: bash scripts/nightly/build-libtiledb.sh
       - name: Build TileDB-MariaDB
         run: bash scripts/nightly/build-tiledb-mariadb.sh
