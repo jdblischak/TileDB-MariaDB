@@ -36,6 +36,12 @@ jobs:
         run: bash scripts/nightly/build-libtiledb.sh
       - name: Build TileDB-MariaDB
         run: bash scripts/nightly/build-tiledb-mariadb.sh
+      - name: Report version of embedded libtiledb
+        if: always()
+        run: |
+          which mysqld_safe
+          which mariadb
+          mariadb --execute "show status like '%mytile%';"
   issue:
     permissions:
       issues: write
