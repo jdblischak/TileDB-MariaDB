@@ -42,4 +42,5 @@ cmake \
   -DTILEDB_FORCE_ALL_DEPS=${TILEDB_FORCE_ALL_DEPS-NO} \
   ..
 make -j2
+sudo make install
 #./mysql-test/mysql-test-run.pl --suite=mytile --debug
