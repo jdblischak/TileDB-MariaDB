@@ -16,7 +16,10 @@ jobs:
       matrix:
         os: ["macos-12", "ubuntu-20.04"]
     env:
-      OWNER_TILEDB_MARIADB: ${{ github.repository_owner }} # support building from a fork
+      # support building from a fork
+      OWNER_TILEDB_MARIADB: ${{ github.repository_owner }}
+      # REF_MARIADB must be a tag or branch b/c a shallow clone is performed
+      # with `git clone --depth 1 --branch`
       REF_MARIADB: mariadb-10.5.13
       REF_LIBTILEDB: dev
       REF_TILEDB_MARIADB: ${{ github.sha }}
